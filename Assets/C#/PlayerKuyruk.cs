@@ -15,7 +15,7 @@ public class PlayerKuyruk : MonoBehaviour
     // Baþlangýçta var olan kuyruklarý oluþturmak için.
     Vector3 pos, targetPos;
     GameObject yeniKuyruk;
-
+    public float StartTimer = 3;
 
     // Start is called before the first frame update
     void Start()
@@ -24,67 +24,114 @@ public class PlayerKuyruk : MonoBehaviour
         kuyrugum.Add(new GameObject());
         lastPosition = basTrans;
 
-        // 3 adet kuyruk ekliyoruz. Eklediðimiz her kuyrukta y koordinat deðerini 0.01 azaltýyoruz ve aralarýndaki mesafeyi 0.4 birim olarak ayarlýyoruz.    
-        kuyrukId = 1;
-        pos = new Vector3(0f, 0.01f, 0.4f);
-        targetPos = basTrans.position - pos;
-        yeniKuyruk = Instantiate(kuyrukX, targetPos, Quaternion.identity);
-        yeniKuyruk.GetComponent<kuyrukX>().setKuyrukId(kuyrukId);
-        yeniKuyruk.transform.parent = transform;
-        lastPosition = yeniKuyruk.transform;
-        kuyrugum.Add(yeniKuyruk);
+        if (StartTimer == 0)
+        {
+            kuyrukId = 1;
+            pos = new Vector3(0f, 0.01f, 0.4f);
+            targetPos = basTrans.position - pos;
+            yeniKuyruk = Instantiate(kuyrukX, targetPos, Quaternion.identity);
+            yeniKuyruk.GetComponent<kuyrukX>().setKuyrukId(kuyrukId);
+            yeniKuyruk.transform.parent = transform;
+            lastPosition = yeniKuyruk.transform;
+            kuyrugum.Add(yeniKuyruk);
 
 
-        // 2. kuyruk
-        kuyrukId++;
-        pos = new Vector3(0f, 0.02f, 0.4f);
-        targetPos = lastPosition.position - pos;
-        yeniKuyruk = Instantiate(kuyrukX, targetPos, Quaternion.identity);
-        yeniKuyruk.GetComponent<kuyrukX>().setKuyrukId(kuyrukId);
-        yeniKuyruk.transform.parent = transform;
-        lastPosition = yeniKuyruk.transform;
-        kuyrugum.Add(yeniKuyruk);
+            // 2. kuyruk
+            kuyrukId++;
+            pos = new Vector3(0f, 0.02f, 0.4f);
+            targetPos = lastPosition.position - pos;
+            yeniKuyruk = Instantiate(kuyrukX, targetPos, Quaternion.identity);
+            yeniKuyruk.GetComponent<kuyrukX>().setKuyrukId(kuyrukId);
+            yeniKuyruk.transform.parent = transform;
+            lastPosition = yeniKuyruk.transform;
+            kuyrugum.Add(yeniKuyruk);
 
-        // 3. kuyruk
-        kuyrukId++;
-        pos = new Vector3(0f, 0.03f, 0.4f);
-        targetPos = lastPosition.position - pos;
-        yeniKuyruk = Instantiate(kuyrukX, targetPos, Quaternion.identity);
-        yeniKuyruk.GetComponent<kuyrukX>().setKuyrukId(kuyrukId);
-        yeniKuyruk.transform.parent = transform;
-        lastPosition = yeniKuyruk.transform;
-        kuyrugum.Add(yeniKuyruk);
+            // 3. kuyruk
+            kuyrukId++;
+            pos = new Vector3(0f, 0.03f, 0.4f);
+            targetPos = lastPosition.position - pos;
+            yeniKuyruk = Instantiate(kuyrukX, targetPos, Quaternion.identity);
+            yeniKuyruk.GetComponent<kuyrukX>().setKuyrukId(kuyrukId);
+            yeniKuyruk.transform.parent = transform;
+            lastPosition = yeniKuyruk.transform;
+            kuyrugum.Add(yeniKuyruk);
+        }  
+      
 
     }
 
     void Update()
     {
-        // Her bir kuyruk için hareket iþlemlerini kuyrukId tabanlý bir for döngüsü içinde yapýyoruz.
-        for (int i = 1; i <= kuyrukId; i++)
+        if (StartTimer > 0)
         {
-            // Ýlk kuyruk objem baþ'ý takip edecek. Geri kalan tüm kuyruklar kendilerinden önceki kuyruðu takip edecekler
-            if (i == 1)     // i=1 ilk kuyruk objem;
-            {
-                Vector3 targetPosX = basTrans.transform.position - new Vector3(0f, kuyrukYukseklikFarki, 0f);
-                Quaternion targetRotationX = Quaternion.LookRotation(targetPosX - kuyrugum[1].transform.position);
-                kuyrugum[1].transform.rotation = Quaternion.Slerp(kuyrugum[1].transform.rotation, targetRotationX, hiz * 2f * Time.deltaTime);
-                kuyrugum[1].transform.Translate(Vector3.forward * hiz * Time.deltaTime);
-            }
-            else            // Tüm kuyruklar kendilerinden önceki kuyruðu takip edecekler.
-            {
-                Vector3 targetPos;
-                if (i < 10)        // ilk 10 kuyruk yere yakýn olsunki kalan kuyruklarýn üzerinde görünsün.
-                    targetPos = kuyrugum[i - 1].transform.position - new Vector3(0f, kuyrukYukseklikFarki, 0f);
-                else if (kuyrugum[i - 1].transform.position.y > 0.5f)  // 10 dan sonrakiler 0.01f daha alcakta. 
-                    targetPos = kuyrugum[i - 1].transform.position - new Vector3(0f, kuyrukYukseklikFarki / 4, 0f);
-                else
-                    targetPos = kuyrugum[i - 1].transform.position; // zeminin altýna gitmemesi için son gelenler sabit.
+            StartTimer -= Time.deltaTime;   
+        }
+        if (StartTimer <= 0)
+        {
+            StartTimer = 0;
+        }
 
-                Quaternion targetRotation = Quaternion.LookRotation(targetPos - kuyrugum[i].transform.position);
-                kuyrugum[i].transform.rotation = Quaternion.Slerp(kuyrugum[i].transform.rotation, targetRotation, hiz * 2f * Time.deltaTime);
-                kuyrugum[i].transform.Translate(Vector3.forward * hiz * Time.deltaTime);
+        if (StartTimer == 0)
+        {
+            kuyrukId = 1;
+            pos = new Vector3(0f, 0.01f, 0.4f);
+            targetPos = basTrans.position - pos;
+            yeniKuyruk = Instantiate(kuyrukX, targetPos, Quaternion.identity);
+            yeniKuyruk.GetComponent<kuyrukX>().setKuyrukId(kuyrukId);
+            yeniKuyruk.transform.parent = transform;
+            lastPosition = yeniKuyruk.transform;
+            kuyrugum.Add(yeniKuyruk);
+
+
+            // 2. kuyruk
+            kuyrukId++;
+            pos = new Vector3(0f, 0.02f, 0.4f);
+            targetPos = lastPosition.position - pos;
+            yeniKuyruk = Instantiate(kuyrukX, targetPos, Quaternion.identity);
+            yeniKuyruk.GetComponent<kuyrukX>().setKuyrukId(kuyrukId);
+            yeniKuyruk.transform.parent = transform;
+            lastPosition = yeniKuyruk.transform;
+            kuyrugum.Add(yeniKuyruk);
+
+            // 3. kuyruk
+            kuyrukId++;
+            pos = new Vector3(0f, 0.03f, 0.4f);
+            targetPos = lastPosition.position - pos;
+            yeniKuyruk = Instantiate(kuyrukX, targetPos, Quaternion.identity);
+            yeniKuyruk.GetComponent<kuyrukX>().setKuyrukId(kuyrukId);
+            yeniKuyruk.transform.parent = transform;
+            lastPosition = yeniKuyruk.transform;
+            kuyrugum.Add(yeniKuyruk);
+        }
+
+        if (StartTimer == 0)
+        {
+            for (int i = 1; i <= kuyrukId; i++)
+            {
+                if (i == 1)
+                {
+                    Vector3 targetPosX = basTrans.transform.position - new Vector3(0f, kuyrukYukseklikFarki, 0f);
+                    Quaternion targetRotationX = Quaternion.LookRotation(targetPosX - kuyrugum[1].transform.position);
+                    kuyrugum[1].transform.rotation = Quaternion.Slerp(kuyrugum[1].transform.rotation, targetRotationX, hiz * 2f * Time.deltaTime);
+                    kuyrugum[1].transform.Translate(Vector3.forward * hiz * Time.deltaTime);
+                }
+                else            // Tüm kuyruklar kendilerinden önceki kuyruðu takip edecekler.
+                {
+                    Vector3 targetPos;
+                    if (i < 10)        // ilk 10 kuyruk yere yakýn olsunki kalan kuyruklarýn üzerinde görünsün.
+                        targetPos = kuyrugum[i - 1].transform.position - new Vector3(0f, kuyrukYukseklikFarki, 0f);
+                    else if (kuyrugum[i - 1].transform.position.y > 0.5f)  // 10 dan sonrakiler 0.01f daha alcakta. 
+                        targetPos = kuyrugum[i - 1].transform.position - new Vector3(0f, kuyrukYukseklikFarki / 4, 0f);
+                    else
+                        targetPos = kuyrugum[i - 1].transform.position; // zeminin altýna gitmemesi için son gelenler sabit.
+
+                    Quaternion targetRotation = Quaternion.LookRotation(targetPos - kuyrugum[i].transform.position);
+                    kuyrugum[i].transform.rotation = Quaternion.Slerp(kuyrugum[i].transform.rotation, targetRotation, hiz * 2f * Time.deltaTime);
+                    kuyrugum[i].transform.Translate(Vector3.forward * hiz * Time.deltaTime);
+                }
             }
         }
+       
     }
 
     // Yem yediðimde yeni kuyruk ekle.

@@ -13,6 +13,7 @@ public class CollisionDetection : MonoBehaviour
     private void Start()
     {
         for (int i = 0; i < enemiesParent.childCount; i++)
+
         {
             objects.Add(enemiesParent.GetChild(i).gameObject);
         }
